@@ -1,0 +1,83 @@
+.button {
+  padding: 4px 15px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  
+  &-primary {
+    background: #1677ff;
+    color: #fff;
+    border-color: #1677ff;
+    
+    &:hover {
+      background: #4096ff;
+      border-color: #4096ff;
+    }
+  }
+  
+  &-default {
+    background: #fff;
+    border-color: #d9d9d9;
+    color: rgba(0, 0, 0, 0.88);
+    
+    &:hover {
+      color: #4096ff;
+      border-color: #4096ff;
+    }
+  }
+  
+  &-dashed {
+    background: #fff;
+    border-style: dashed;
+    border-color: #d9d9d9;
+    color: rgba(0, 0, 0, 0.88);
+    
+    &:hover {
+      color: #4096ff;
+      border-color: #4096ff;
+    }
+  }
+  
+  &-text {
+    background: transparent;
+    border-color: transparent;
+    color: rgba(0, 0, 0, 0.88);
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+  }
+  
+  &-link {
+    background: transparent;
+    border-color: transparent;
+    color: #1677ff;
+    
+    &:hover {
+      color: #4096ff;
+    }
+  }
+  
+  &-large {
+    padding: 6px 15px;
+    font-size: 16px;
+  }
+  
+  &-small {
+    padding: 0 7px;
+    font-size: 12px;
+  }
+  
+  &-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    
+    &:hover {
+      color: inherit;
+      border-color: inherit;
+      background: inherit;
+    }
+  }
+}
