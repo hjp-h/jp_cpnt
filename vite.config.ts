@@ -12,7 +12,7 @@ export default defineConfig({
       name: "JPCpnt",
       fileName: (format) => `jp_cpnt.${format}.js`,
     },
-    target: "ES2015",
+    target: "es6",
     rollupOptions: {
       external: ["react", "react-dom"],
       output: {
