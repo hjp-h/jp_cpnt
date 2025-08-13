@@ -1,0 +1,15 @@
+.DraggableContainer,.DroppableContainer {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.DraggableContainer {
+  background-color: red;
+}
+.DroppableContainer {
+   width: 400px;
+  height: 400px;
+  background-color: blue;
+}
