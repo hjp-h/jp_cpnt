@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Application, Assets, Container, Sprite } from "pixi.js";
+import { initDevtools } from "@pixi/devtools";
 import { Card } from "antd";
 
 const PixijsDemo: React.FC = () => {
@@ -23,6 +24,7 @@ const PixijsDemo: React.FC = () => {
           height: 600,
           antialias: true,
         });
+        initDevtools({ app });
 
         // Check if component is still mounted before proceeding
         if (!isMounted) {
