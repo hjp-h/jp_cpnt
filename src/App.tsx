@@ -1,12 +1,15 @@
-import Button from "./components/Button/Button";
+import React from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import router from './router';
 import "./App.css";
 
 function App() {
   return (
-    <>
-      <h1>JP Component</h1>
-      <Button>按钮</Button>
-    </>
+    <ConfigProvider locale={zhCN}>
+      <RouterProvider router={router} />
+    </ConfigProvider>
   );
 }
 
