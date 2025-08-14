@@ -39,3 +39,7 @@
 .read-the-docs {
   color: #888;
 }
+.ant-layout-content{
+  height: calc(100vh - 70px);
+  overflow: auto;
+}

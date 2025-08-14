@@ -1,20 +1,41 @@
+@use "@/styles/mixins"as mixins;
+
 .GsapDemo {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: scroll;
+
+  @for $i from 1 through 3 {
+    &#{$i}Container {
+      position: relative;
+      height: 2000px;
+      background-color: #5deb67;
+
+      @if $i==2 {
+        background-color: rgb(69, 120, 209);
+      }
+
+      @if $i==3 {
+        background-color: rgb(226, 82, 209);
+      }
+    }
+  }
+
   &Box {
     width: 100px;
     height: 100px;
-    position: absolute;
-    left: 100px;
-    top: 100px;
+    @include mixins.center();
   }
+
   &Box1 {
     background-color: red;
   }
+
   &Box2 {
     background-color: blue;
   }
+
   &Box3 {
     background-color: green;
   }

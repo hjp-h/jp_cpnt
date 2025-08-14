@@ -1,0 +1,71 @@
+@mixin textEllipsis($width, $isTextAlignCenter: false) {
+  max-width: $width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @if $isTextAlignCenter==false {
+    &:lang(ar) {
+      direction: rtl;
+      text-align: right;
+    }
+  }
+
+  @else {
+    text-align: center;
+    direction: auto;
+  }
+}
+
+@mixin lineClamp($lineNumber, $width) {
+  max-width: $width;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $lineNumber;
+  -webkit-box-orient: vertical;
+}
+
+@mixin flex-row-gap($item-width, $items-per-row: 2, $margin-inline: 0px, $margin-block: 0px) {
+  $gap: calc((100% - #{$item-width} * #{$items-per-row}) / #{$items-per-row} / 2);
+
+  @if $margin-inline>0px {
+    $gap: $margin-inline;
+  }
+
+  width: $item-width;
+  margin: $margin-block $gap;
+}
+
+@mixin center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin centerX {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@mixin textStroke($color, $width: 1px) {
+  -webkit-text-stroke: $width $color;
+
+  // 添加 text-shadow 作为降级方案
+  @supports not (-webkit-text-stroke: $width $color) {
+    text-shadow:
+      (-$width) (-$width) 0 $color,
+      $width (-$width) 0 $color,
+      (-$width) $width 0 $color,
+      $width $width 0 $color;
+  }
+}
+
+@mixin flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
