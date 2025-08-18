@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { Application, Assets, Container, Sprite } from "pixi.js";
-import { initDevtools } from "@pixi/devtools";
+// import { initDevtools } from "@pixi/devtools";
 import { Card } from "antd";
-
-const PixijsDemo: React.FC = () => {
+// 入门demo
+const Demo1: React.FC = () => {
   const pixiContainerRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<Application | null>(null);
 
+  // 旋转兔子动画
   useEffect(() => {
     let isMounted = true;
 
@@ -24,7 +25,7 @@ const PixijsDemo: React.FC = () => {
           height: 600,
           antialias: true,
         });
-        initDevtools({ app });
+        // initDevtools({ app });
 
         // Check if component is still mounted before proceeding
         if (!isMounted) {
@@ -71,10 +72,18 @@ const PixijsDemo: React.FC = () => {
         container.pivot.x = container.width / 2;
         container.pivot.y = container.height / 2;
 
+        // let ellipse = 0;
         // Listen for animate update
         app.ticker.add((time) => {
           // Continuously rotate the container!
           // * use delta to create frame-independent transform *
+          // 这里的deltaTime是一种倍数关系  deltaTime = 当前帧耗时 / 16.666ms
+          // ellipse += time.deltaTime / 60;
+          // // 1s旋转一次
+          // if (ellipse >= 1) {
+          //   container.rotation -= 100;
+          //   ellipse = 0;
+          // }
           container.rotation -= 0.01 * time.deltaTime;
         });
       } catch (error) {
@@ -108,9 +117,9 @@ const PixijsDemo: React.FC = () => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <Card title="PixiJS 组件演示" bordered={false}>
+      <Card title="PixiJS 旋转兔子动画" bordered={false}>
         <div style={{ marginBottom: "16px" }}>
-          <h3>PixiJS 旋转兔子动画</h3>
+          <h3></h3>
           <p>
             这是一个使用 PixiJS 创建的简单动画示例，展示了25个旋转的兔子精灵。
           </p>
@@ -127,19 +136,9 @@ const PixijsDemo: React.FC = () => {
             minHeight: "600px",
           }}
         />
-        <div style={{ marginTop: "16px" }}>
-          <h4>技术特点：</h4>
-          <ul>
-            <li>使用 PixiJS WebGL 渲染引擎</li>
-            <li>60fps 流畅动画</li>
-            <li>精灵批量渲染优化</li>
-            <li>React 生命周期集成</li>
-            <li>资源自动清理</li>
-          </ul>
-        </div>
       </Card>
     </div>
   );
 };
 
-export default PixijsDemo;
+export default Demo1;
