@@ -6,7 +6,7 @@ import Users from "../pages/Users";
 import Settings from "../pages/Settings";
 import ButtonDemo from "../pages/Demo/ButtonDemo";
 import LayoutDemo from "../pages/Demo/LayoutDemo";
-import PixijsDemo from "../pages/Demo/PixijsDemo";
+import PixijsDemo from "../pages/Demo/PixiJs";
 import DndKitDemo from "../pages/Demo/DndKitDemo";
 import GsapDemo from "../pages/Demo/GsapDemo";
 
