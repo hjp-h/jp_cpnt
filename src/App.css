@@ -42,4 +42,7 @@
 .ant-layout-content{
   height: calc(100vh - 70px);
   overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

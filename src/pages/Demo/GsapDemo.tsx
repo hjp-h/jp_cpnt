@@ -26,6 +26,7 @@ export default function GsapDemo() {
 
     // 方式1
     const scrollTriggerInstance = ScrollTrigger.create({
+      // 滚动的元素
       trigger: ".container1",
       scroller: `.${$style.GsapDemo}`, // 指定滚动容器为GsapDemo元素
       start: "top top", // 当容器顶部到达滚动容器顶部时开始
@@ -36,11 +37,25 @@ export default function GsapDemo() {
       markers: true,
       // 绑定动画和滚动条
       scrub: 1, // 添加缓动效果
+      onUpdate: (self) => {
+        // ScrollTrigger的进度更改时 都会被调用
+        // self.progress 0-1 表示当前滚动的进度
+        console.log(self.progress);
+      },
       animation: gsap
         .timeline()
         .to(".box2", {
           x: 150,
           duration: 1,
+          onStart: () => {
+            console.log("box2 开始动画");
+          },
+          onComplete: () => {
+            console.log("box2 动画完成");
+          },
+          onUpdate: () => {
+            console.log("box2 动画更新");
+          },
         })
         .to(
           ".box3",

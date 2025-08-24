@@ -5,11 +5,15 @@
   height: 100%;
   position: relative;
   overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @for $i from 1 through 3 {
     &#{$i}Container {
       position: relative;
       height: 2000px;
+      width: 100%;
       background-color: #5deb67;
 
       @if $i==2 {
