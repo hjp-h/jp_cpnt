@@ -22,9 +22,34 @@ webgpu、webgl、canvas
 （4）Graphics图形
 （5）Text文本
 （6）Button按钮
-3. Assets资产
-4. Application
-5. Ticker 
-ticker 是 PixiJS 中的一个核心组件，用于管理游戏循环和动画。它负责在每个动画帧中更新和渲染场景对象。
-6. Events事件
-7. Filters过滤器
+每一帧，PixiJS 都会更新场景图，然后渲染场景图。场景图的根节点是由应用程序维护的容器，并使用 app.stage 引用。类似于DOM树的根节点，当app.stage中再继续添加其它可渲染对象，例如Sprite,或者Container包裹着Container这些情况。
+当父级移动时，其子级也会移动；父级隐藏时，其子级也会隐藏；如果父级的 alpha 设置为 0.5（使其 50% 透明），则其所有子级也将从 50% 透明开始。如果将子项设置为 0.5 alpha，则它不会是 50% 透明，而是 0.5 x 0.5 = 0.25 alpha，或 75% 透明。同样，对象的位置是相对于其父级的，因此，如果将父级设置为 50 像素的 x 位置，而将子级设置为 100 像素的 x 位置，则将以 150 像素的屏幕偏移量绘制，即 50 + 100。
+<Demo2/>
+
+局部坐标和全局坐标
+在 PixiJS 中，每个显示对象都有一个局部坐标系统和一个全局坐标系统。
+局部坐标系统是相对于显示对象的父容器的坐标系统。
+全局坐标系统是相对于场景图的根容器（即应用程序的 stage）的坐标系统。
+
+全局坐标和局部坐标的转换
+可以使用全局坐标来定位和操作显示对象，也可以使用局部坐标来定位和操作显示对象。
+要将全局坐标转换为局部坐标，需要使用 displayObject.toLocal() 方法。
+要将局部坐标转换为全局坐标，需要使用 displayObject.toGlobal() 方法。
+例如，要将全局坐标 (100, 100) 转换为局部坐标，需要使用以下代码：
+```
+const localPosition = displayObject.toLocal(new PIXI.Point(100, 100));
+```
+要将局部坐标 (100, 100) 转换为全局坐标，需要使用以下代码：
+```
+const globalPosition = displayObject.toGlobal(new PIXI.Point(100, 100));
+```
+
+1. Assets资产
+   提供了用于异步加载资源（如图像和音频文件）的工具。
+2. Application
+3. Ticker 
+   ticker 是 PixiJS 中的一个核心组件，用于管理游戏循环和动画。它负责在每个动画帧中更新和渲染场景对象。
+4. Events事件
+   支持基于pointer的交互 - 使对象可点击、触发悬停事件等
+5. Filters过滤器
+   支持各种滤镜，包括自定义着色器，以将效果应用于可渲染对象
