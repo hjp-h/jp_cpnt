@@ -49,6 +49,14 @@ const globalPosition = displayObject.toGlobal(new PIXI.Point(100, 100));
 2. Application
 3. Ticker 
    ticker 是 PixiJS 中的一个核心组件，用于管理游戏循环和动画。它负责在每个动画帧中更新和渲染场景对象。
+   应用程序的 ticker 是一个循环，它会在每个动画帧中调用回调函数。回调函数接收一个 ticker 对象作为参数，该对象包含有关当前动画帧的信息，例如 deltaTime（缩放的帧增量）,elapsedMS(以毫秒为单位，与上一帧调用间隔的时间)。
+   deltaTime是一种倍数关系  deltaTime = 当前帧耗时 / 16.666ms，deltaTime 表示 当前帧相对于“理想帧时间”的倍数。理想帧率是 60 FPS（每帧约 16.666ms），在这个情况下 deltaTime ≈ 1。如果渲染速度变慢，比如实际渲染一帧用了 33ms（30 FPS），那么 deltaTime ≈ 2。
+   ```js
+   app.ticker.add((ticker) => {
+    bunny.rotation += ticker.deltaTime * 0.1;
+   });
+
+   ```
 4. Events事件
    支持基于pointer的交互 - 使对象可点击、触发悬停事件等
 5. Filters过滤器
