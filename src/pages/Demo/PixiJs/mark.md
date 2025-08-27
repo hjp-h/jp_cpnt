@@ -61,3 +61,30 @@ const globalPosition = displayObject.toGlobal(new PIXI.Point(100, 100));
    支持基于pointer的交互 - 使对象可点击、触发悬停事件等
 5. Filters过滤器
    支持各种滤镜，包括自定义着色器，以将效果应用于可渲染对象
+7. Render Groups渲染组【性能优化】
+   渲染组是 PixiJS 中的一个功能，用于将显示对象分组并进行批量渲染。
+   使用渲染组的主要优势在于其性能优化的能力。它们允许将某些计算（例如变换（位置、缩放、旋转）、色调和 alpha 调整）在 GPU中进行。这意味着移动或调整渲染组等作可以在对 CPU 影响最小的情况下完成，从而提高应用程序的性能效率。适用于以下场景：
+   （1）静态内容： 对于不经常更改的内容，渲染组可以显著减少 CPU 上的计算负载。在这种情况下，静态是指场景图结构，而不是其中 PixiJS 元素的实际值（例如位置、事物的比例）。
+   （2）独特的场景部分： 您可以将场景进行合理地划分，例如游戏逻辑和 显示部分。每个部件都可以单独优化，从而提高整体性能。
+
+   ```js
+   import { Container } from 'pixi.js';
+
+  const myGameWorld = new Container({
+    isRenderGroup: true,
+  });
+
+  const myHud = new Container({
+    isRenderGroup: true,
+  });
+
+  scene.addChild(myGameWorld, myHud);
+
+  renderer.render(scene); // this action will actually convert the scene to a render group under the hood
+   ```
+   最佳实践：
+   （1）不要过度使用，过多地分组会降低性能，要找到一个平衡点，不要为了分组而分组。
+   （2）战略分组，考虑场景的哪一些部分会变化，哪些保持静止，将动态元素和静态元素进行分组可以提高性能
+8. Render Layers【渲染层】
+   PixiJS Layer API提供了强大的方法来控制对象的渲染顺序，而不受原本在场景图中逻辑父子关系的影响，使用RenderLayers可以将某个对象的变换形式【通过父级元素实现】与视觉绘制方式解耦。
+9. 
