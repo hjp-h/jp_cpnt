@@ -23,6 +23,29 @@ PixiJs中主要的场景对象有如下几个，后文会详细介绍
 ### Render渲染器
 webgpu、webgl、canvas
 
+### Application
+Application 是 PixiJS 中用于创建和管理应用程序的主要类。提供了一个现代的、可拓展的入口去启动渲染。
+正常来说，我们后续的动画都是在Application的基础上进行的，所以我们会进行一下操作：
+（1）先创建一个Application实例。
+（2）调用app.init()方法初始化应用程序。
+init方法参数 https://pixijs.com/8.x/guides/components/application#applicationoptions-reference
+（3）将app.canvas添加到dom中
+创建Application
+```js
+import { Application } from 'pixi.js';
+
+const app = new Application();
+
+await app.init({
+  width: 800,
+  height: 600,
+  backgroundColor: 0x1099bb,
+});
+// 应用程序实例化后，将自动创建一个渲染器和一个根容器（stage）。
+// 渲染器可以通过 app.renderer 访问，而根容器可以通过 app.stage 访问。
+document.body.appendChild(app.canvas);
+```
+
 ### Container
 Container 是 PixiJS 中用于组织和管理显示对象的容器类,是 PixiJS 场景图系统的基础。容器不会直接渲染，而是将渲染交给它的子元素。
 ```js
@@ -171,6 +194,8 @@ const bunnyTexture = Assets.get('bunny');
 Assets.unload('资源地址或者资源别名');
 ```
 
+
+
 ### Textures
 Textures(纹理)是PixiJs中的重要组件之一，它们定义了通过Sprite、Meshes和其他可渲染对象使用的视觉内容，例如图片、视频等内容。
 
@@ -219,29 +244,181 @@ const texture = await Assets.load('myTexture.png');
 #### 常见纹理类型
 https://pixijs.com/8.x/guides/components/textures#texture-types
 
-### Application
-Application 是 PixiJS 中用于创建和管理应用程序的主要类。提供了一个现代的、可拓展的入口去启动渲染。
-正常来说，我们后续的动画都是在Application的基础上进行的，所以我们会进行一下操作：
-（1）先创建一个Application实例。
-（2）调用app.init()方法初始化应用程序。
-init方法参数 https://pixijs.com/8.x/guides/components/application#applicationoptions-reference
-（3）将app.canvas添加到dom中
-创建Application
+
+
+
+
+### Graphics
+Graphics 是 PixiJS 中用于创建和操作矢量图形的类。它允许您使用代码创建和绘制各种形状，如矩形、圆形、多边形等。它还可用于通过组合多个基元来创建复杂的形状，并支持渐变、纹理和蒙版等高级功能。
+尽管有 .rect（） 或 .circle（） 等函数的术语，但 Graphics 不会立即绘制任何内容。相反，每个方法都会构建存储在 GraphicsContext 中的几何基元列表。然后，当对象绘制到屏幕上或在添加到可渲染场景中时，才会被渲染。
+Graphics方法 https://pixijs.download/release/docs/scene.Graphics.html
 ```js
-import { Application } from 'pixi.js';
+import { Graphics } from 'pixi.js';
+// 创建一个三角形 并填充为红色
+const graphics = new Graphics().rect(50, 50, 100, 100).fill(0xff0000);
 
-const app = new Application();
+```
+#### 基本图元
+Basic Primitives  基本图元
+Line  线
+Rectangle  矩形
+Rounded Rectangle  圆角矩形
+Circle  圈
+Ellipse  椭圆
+Arc  弧
+Bezier / Quadratic Curves
+贝塞尔曲线/二次曲线
+#### 高级图元
+Chamfer Rect  倒角矩形
+Fillet Rect  圆角矩形
+Regular Polygon  正多边形
+Star  星
+Rounded Polygon  圆角多边形（Rounded Polygon）
+Rounded Shape  圆角形状
+#### svg支持
+```js
+let shape = new Graphics().svg(`
+  <svg>
+    <path d="M 100 350 q 150 -300 300 0" stroke="blue" />
+  </svg>
+`);
+```
+#### 图形上下文
+GraphicsContext 类是 PixiJS 新图形模型的核心。它包含所有绘图命令和样式，允许多个图形实例重用相同的形状数据：
+```js
+const context = new GraphicsContext().circle(100, 100, 50).fill('red');
+// shapeA和shapeB共用一个图形上下文
+const shapeA = new Graphics(context);
+const shapeB = new Graphics(context);
+// 销毁
+// 此时shapeB也会被销毁 如果不传{ context: true } 则只会销毁shapeA
+shapeA.destroy({ context: true });
+```
+此模式在渲染重复动画或动画形状（例如基于帧的 SVG 交换）时特别有效：
+```js
+let frames = [
+  new GraphicsContext().circle(100, 100, 50).fill('red'),
+  new GraphicsContext().rect(0, 0, 100, 100).fill('red'),
+];
 
-await app.init({
-  width: 800,
-  height: 600,
-  backgroundColor: 0x1099bb,
-});
-// 应用程序实例化后，将自动创建一个渲染器和一个根容器（stage）。
-// 渲染器可以通过 app.renderer 访问，而根容器可以通过 app.stage 访问。
-document.body.appendChild(app.canvas);
+let graphic = new Graphics(frames[0]);
+
+function update() {
+  graphic.context = frames[1]; // Very cheap operation
+}
+```
+#### 裁剪
+使用 .cut() 从上一个形状中删除形状
+```js
+// 从一个矩形中裁剪出一个圆形
+const g = new Graphics().rect(0, 0, 100, 100).fill(0x00ff00).circle(50, 50, 20).cut();
 ```
 
+### Text
+栅格化：把一段 文字（矢量信息） 转换成 由像素点组成的位图图像，这样 GPU 就能把它当做一张纹理（texture）来渲染。
+PixiJS 提供了三种不同的系统来满足不同的文本需求：
+1. Text: 用于渲染简单的文本，支持字体、大小、颜色、对齐等样式。
+   Text 是 PixiJS 中用于渲染文本的类。它基于浏览器的画布文本 API 对文本进行栅格化，然后将其转换为纹理。这使得文本对象的行为类似于精灵：它们可以有效地移动、旋转、缩放、遮罩和渲染。
+   文本样式：https://pixijs.download/release/docs/text.TextStyle.html
+   ```js
+   const myText = new Text({
+    text: 'Hello PixiJS!',
+    style: {
+      fill: '#ffffff',
+      fontSize: 36,
+      fontFamily: 'MyFont',
+    },
+    anchor: 0.5
+  });
+   ```
+2. BitmapText: 用于渲染位图字体，支持自定义字体和字符映射。
+BitmapText 是 PixiJS 中的高性能文本渲染解决方案。与将每个字符串栅格化为新纹理的 Text 类不同，BitmapText 从预先生成的纹理图集中绘制字符。这种设计允许您以最小的开销渲染数以万计的文本对象。
+```js
+const text = new BitmapText({
+  text: 'Loaded font!',
+  style: {
+    fontFamily: 'MyFont',
+    fontSize: 32,
+    fill: '#ffcc00',
+  },
+});
+```
+3. HTMLText: 用于渲染 HTML 标签，支持丰富的文本格式和样式。HTMLText 允许将样式化、格式化的 HTML 字符串呈现为 PixiJS 场景图的一部分。它使用 SVG <foreignObject> 将浏览器原生 HTML 嵌入到 WebGL 画布中。它非常适合渲染复杂的排版、内联格式、表情符号和布局效果，这些效果很难使用传统的画布渲染文本复制。
+```js
+const html = new HTMLText({
+  text: '<strong>Hello</strong> <em>PixiJS</em>!',
+  style: {
+    fontFamily: 'Arial',
+    fontSize: 24,
+    fill: '#ff1010',
+    align: 'center',
+  },
+});
+// css样式覆盖 可以使用 cssOverrides 属性将 CSS 样式应用于文本。这允许您设置文本阴影 、 文本装饰等属性
+html.addOverride('text-shadow: 2px 2px 4px rgba(0,0,0,0.5)');
+```
+
+4. SplitText & SplitBitMapText
+SplitText 和 SplitBitmapText 类允许将字符串分解为单独的行、单词和字符（每个行、单词和字符作为自己的显示对象），从而解锁丰富的每段动画和高级文本布局效果。这些类的工作方式与常规 Text 或 BitmapText 类似，但提供对文本每个部分的细粒度控制。
+SplitText 和 SplitBitmapText区别在于底层文本的呈现，SplitText适合风格丰富的文本，SplitBitmapText适合高性能动态文本。
+SplitText示例：
+```js
+import { SplitText } from 'pixi.js';
+
+const text = new SplitText({
+  text: 'Hello World',
+  style: { fontSize: 32, fill: 0xffffff },
+
+  // Optional: Anchor points (0-1 range)
+  lineAnchor: 0.5, // Center lines
+  wordAnchor: { x: 0, y: 0.5 }, // Left-center words
+  charAnchor: { x: 0.5, y: 1 }, // Bottom-center characters
+  autoSplit: true,
+});
+```
+SplitBitmapText 示例：
+```js
+const text = new SplitBitmapText({
+  text: 'High Performance',
+  style: { fontFamily: 'Game Font', fontSize: 32 },
+  autoSplit: true,
+});
+```
+```js
+console.log(text.lines); // Array of line containers
+console.log(text.words); // Array of word containers
+console.log(text.chars); // Array of character display objects
+```
+动画示例：
+```js
+import { gsap } from 'gsap';
+
+const text = new SplitBitmapText({
+  text: 'Split and Animate',
+  style: { fontFamily: 'Game Font', fontSize: 48 },
+});
+
+app.stage.addChild(text);
+
+// Animate characters one by one
+text.chars.forEach((char, i) => {
+  gsap.from(char, {
+    alpha: 0,
+    delay: i * 0.05,
+  });
+});
+
+// Animate words with scaling
+text.words.forEach((word, i) => {
+  gsap.to(word.scale, {
+    x: 1.2,
+    y: 1.2,
+    yoyo: true,
+    repeat: -1,
+    delay: i * 0.2,
+  });
+});
+```
 ## Ticker 
    ticker 是 PixiJS 中的一个核心组件，用于管理游戏循环和动画。它负责在每个动画帧中更新和渲染场景对象。
    应用程序的 ticker 是一个循环，它会在每个动画帧中调用回调函数。回调函数接收一个 ticker 对象作为参数，该对象包含有关当前动画帧的信息，例如 deltaTime（缩放的帧增量）,elapsedMS(以毫秒为单位，与上一帧调用间隔的时间)。
@@ -254,9 +431,143 @@ document.body.appendChild(app.canvas);
    ```
 
 ## Events事件
-   支持基于pointer的交互 - 使对象可点击、触发悬停事件等
+   支持基于pointer的交互 - 使对象可点击、触发悬停事件等，类似 DOM 的联合事件模型。
+```js
+const sprite = new Sprite(texture);
+sprite.eventMode = 'static';
+sprite.on('pointerdown', () => {
+  console.log('Sprite clicked!');
+});
+```
+### Event Modes 事件模式
+要使用事件系统，请设置容器（或其子类,如Sprite）的eventMode并订阅事件监听器。
+| 模式            | 行为说明                                                      | 适用场景            |
+| ------------- | --------------------------------------------------------- | --------------- |
+| **`none`**    | 忽略所有交互事件，也不对子节点进行事件检测或处理。最轻量、性能最优。                        | 背景、纯展示元素        |
+| **`passive`** | 不会自身接受事件或参与 hit-testing，但有交互的子节点仍可响应事件（默认模式）。             | 大容器中仅部分内容可交互的场景 |
+| **`auto`**    | 仅当父节点可交互时，本身才参与 hit-testing，但自身不响应事件。                     | 结构中仅被动响应的中间父容器  |
+| **`static`**  | 可接受事件，参与 hit-testing。等效于 v7 中的 `interactive = true`。      | 常见的按钮、控件等静态交互元素 |
+| **`dynamic`** | 同 `static`，但在鼠标静止时也会接收模拟事件（synthetic events）。适合动画或移动中的目标。 | 动态移动或动画中的交互对象   |
+Hit-testing：指的是 PixiJS 判断鼠标或触摸是否与某个显示对象相“交互”的过程（比如点击或触碰）。
+Synthetic events（模拟事件）：在对象移动或动画过程中，即使鼠标不动，PixiJS 仍会周期性触发事件（如 pointermove），确保你仍能进行交互监测。
+
+建议
+1. 对于不需要交互的显示对象，使用 eventMode = 'none' 能有效减少计算和提高性能。
+2. 若只是容器，内容里只有部分需要交互，可以用 passive 让子节点仍然可点击。
+3. 常规按钮或固定交互元素建议用 static。
+4. 对于不断移动或动画中的目标，选择 dynamic 能保持交互稳定。
+```js
+const sprite = new PIXI.Sprite(texture);
+
+// 静态按钮
+sprite.eventMode = 'static';
+sprite.on('pointerdown', () => {
+  console.log('Clicked!');
+});
+
+// 正在移动的交互元素
+sprite.eventMode = 'dynamic';
+sprite.on('pointermove', () => {
+  console.log('Pointer over moving sprite');
+});
+```
+### Event Type事件类型
+https://pixijs.com/8.x/guides/components/events#event-types
+
 ## Filters过滤器
-   支持各种滤镜，包括自定义着色器，以将效果应用于可渲染对象
+   支持各种滤镜，包括自定义着色器，以将效果应用于可渲染对象。
+   应用过滤器非常简单。可以将过滤器实例分配给任何场景对象的 filters 属性，例如 Sprite、Container 或 Graphics。您可以通过传递过滤器实例数组来应用多个过滤器。
+   ```js
+   import { BlurFilter, NoiseFilter } from 'pixi.js';
+    sprite.filters = new BlurFilter({ strength: 5 });
+    sprite.filters = [new BlurFilter({ strength: 4 }), new NoiseFilter({ noise: 0.2 })];
+   ```
+### 内置过滤器
+| Filter Class  过滤器类 | Description  描述 |
+|:---------|:----------:|
+| **AlphaFilter** | 将透明度应用于对象。|
+| **BlurFilter** | 模糊对象。|
+| **ColorMatrixFilter** | 通过矩阵应用颜色变换|
+| **DisplacementFilter** | 使用其他纹理扭曲对象|
+| **NoiseFilter** | 添加随机噪点以获得颗粒效果|
+更多滤镜 https://pixijs.com/8.x/guides/components/filters
+### 自定义过滤器
+```js
+import { Filter, GlProgram, Texture } from 'pixi.js';
+
+const vertex = `
+  in vec2 aPosition;
+  out vec2 vTextureCoord;
+
+  uniform vec4 uInputSize;
+  uniform vec4 uOutputFrame;
+  uniform vec4 uOutputTexture;
+
+  vec4 filterVertexPosition( void )
+  {
+      vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;
+
+      position.x = position.x * (2.0 / uOutputTexture.x) - 1.0;
+      position.y = position.y * (2.0*uOutputTexture.z / uOutputTexture.y) - uOutputTexture.z;
+
+      return vec4(position, 0.0, 1.0);
+  }
+
+  vec2 filterTextureCoord( void )
+  {
+      return aPosition * (uOutputFrame.zw * uInputSize.zw);
+  }
+
+  void main(void)
+  {
+      gl_Position = filterVertexPosition();
+      vTextureCoord = filterTextureCoord();
+  }
+`;
+
+const fragment = `
+  in vec2 vTextureCoord;
+  in vec4 vColor;
+
+  uniform sampler2D uTexture;
+  uniform float uTime;
+
+  void main(void)
+  {
+      vec2 uvs = vTextureCoord.xy;
+
+      vec4 fg = texture2D(uTexture, vTextureCoord);
+
+
+      fg.r = uvs.y + sin(uTime);
+
+
+      gl_FragColor = fg;
+
+  }
+`;
+
+const customFilter = new Filter({
+  glProgram: new GlProgram({
+    fragment,
+    vertex,
+  }),
+  resources: {
+    timeUniforms: {
+      uTime: { value: 0.0, type: 'f32' },
+    },
+  },
+});
+
+// Apply the filter
+sprite.filters = [customFilter];
+
+// Update uniform
+app.ticker.add((ticker) => {
+  filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;
+});
+```
+
 ## Render Groups渲染组【性能优化】
    渲染组是 PixiJS 中的一个功能，用于将显示对象分组并进行批量渲染。
    使用渲染组的主要优势在于其性能优化的能力。它们允许将某些计算（例如变换（位置、缩放、旋转）、色调和 alpha 调整）在 GPU中进行。这意味着移动或调整渲染组等作可以在对 CPU 影响最小的情况下完成，从而提高应用程序的性能效率。适用于以下场景：
@@ -343,8 +654,6 @@ await app.init({
 https://pixijs.com/8.x/guides/concepts/performance-tips
 
 ## 局部坐标和全局坐标
-
-
 在 PixiJS 中，每个显示对象都有一个局部坐标系统和一个全局坐标系统。
 局部坐标系统是相对于显示对象的父容器的坐标系统。
 全局坐标系统是相对于场景图的根容器（即应用程序的 stage）的坐标系统。

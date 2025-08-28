@@ -1,6 +1,17 @@
 import React, { useEffect, useRef } from "react";
-import { Application, Container, Graphics } from "pixi.js";
-// import { initDevtools } from "@pixi/devtools";
+import gsap from "gsap";
+import {
+  Application,
+  BitmapText,
+  Container,
+  Graphics,
+  GraphicsContext,
+  HTMLText,
+  Text,
+  SplitText,
+  SplitBitmapText,
+} from "pixi.js";
+import { initDevtools } from "@pixi/devtools";
 import { Card } from "antd";
 // 入门demo
 const Demo4: React.FC = () => {
@@ -25,7 +36,7 @@ const Demo4: React.FC = () => {
           height: 600,
           antialias: true,
         });
-        // initDevtools({ app });
+        initDevtools({ app });
 
         // Check if component is still mounted before proceeding
         if (!isMounted) {
@@ -49,12 +60,24 @@ const Demo4: React.FC = () => {
 
         // 创建图形
         const graphics = new Graphics()
+          // 1. 长方形
           .rect(50, 50, 100, 100)
+          // 填充颜色
           .fill(0xff0000)
+          // 2. 圆形
           .circle(100, 100, 50)
+          // 描边
           .stroke(0x00ff00);
-
         container.addChild(graphics);
+
+        // 3. 三角形
+        const triangle = new Graphics()
+          .moveTo(100, 100)
+          .lineTo(200, 100)
+          .lineTo(200, 200)
+          .closePath()
+          .fill(0x0000ff);
+        container.addChild(triangle);
 
         // 支持svga
         const shape = new Graphics().svg(`
@@ -66,6 +89,112 @@ const Demo4: React.FC = () => {
         shape.y = -100;
         container.addChild(shape);
 
+        // 图形上下文
+        const graphContext = new GraphicsContext()
+          .circle(200, 200, 50)
+          .fill("green");
+        // 共用一个图像上下文 指向同一个图形
+        const shapeA = new Graphics(graphContext);
+        const shapeB = new Graphics(graphContext);
+        const container2 = new Container();
+        container2.addChild(shapeB);
+        container2.x = 100;
+        container2.y = 50;
+        container.addChild(shapeA, container2);
+        setTimeout(() => {
+          // 传入{ context: true } 会将图形上下文删掉 不传的话只删除shapeA
+          shapeA && shapeA?.destroy?.({ context: true });
+        }, 2000);
+
+        //  在图形中进行剪裁
+        const g = new Graphics()
+          .rect(0, 0, 100, 100)
+          .fill(0x00ff00)
+          .circle(50, 50, 20)
+          .cut();
+        g.x = -200;
+        g.y = 100;
+        container.addChild(g);
+
+        // 文字Text
+        const myText = new Text({
+          text: "Hello PixiJS!",
+          style: {
+            fill: "#ffffff",
+            fontSize: 36,
+            fontFamily: "MyFont",
+          },
+          anchor: 0.5,
+        });
+        container.addChild(myText);
+
+        // Bitmap Text
+        const bitMapText = new BitmapText({
+          text: "Hello PixiJS!",
+          style: {
+            fontFamily: "MyFont",
+            fontSize: 36,
+            fill: "#ffcc00",
+          },
+        });
+        bitMapText.y = 50;
+        bitMapText.x = -200;
+        container.addChild(bitMapText);
+
+        // HtmlText
+        const html = new HTMLText({
+          text: "<strong>Hello</strong> <em>PixiJS</em>!",
+          style: {
+            fontFamily: "Arial",
+            fontSize: 24,
+            fill: "#1a0aae",
+            align: "center",
+          },
+        });
+        html.x = 200;
+        container.addChild(html);
+
+        // SplitText
+        const splitText = new SplitText({
+          text: "Hello World",
+          style: { fontSize: 32, fill: 0xffffff },
+
+          // Optional: Anchor points (0-1 range)
+          lineAnchor: 0.5, // Center lines
+          wordAnchor: { x: 0, y: 0.5 }, // Left-center words
+          charAnchor: { x: 0.5, y: 1 }, // Bottom-center characters
+          autoSplit: true,
+        });
+        splitText.x = 200;
+        console.log(splitText.lines); // Array of line containers
+        console.log(splitText.words); // Array of word containers
+        console.log(splitText.chars);
+        container.addChild(splitText);
+
+        // splitBitmapText
+        const bitMapText1 = new SplitBitmapText({
+          text: "Split and Animate",
+          style: { fontFamily: "Game Font", fontSize: 48 },
+        });
+        container.addChild(bitMapText1);
+        bitMapText1.chars.forEach((char, i) => {
+          gsap.from(char, {
+            alpha: 0,
+            delay: i * 0.05,
+          });
+        });
+
+        // Animate words with scaling
+        bitMapText1.words.forEach((word, i) => {
+          gsap.to(word.scale, {
+            x: 1.2,
+            y: 1.2,
+            yoyo: true,
+            repeat: -1,
+            delay: i * 0.2,
+          });
+        });
+
         // Check again if component is still mounted
         if (!isMounted) {
           app.destroy(true, true);
@@ -73,9 +202,10 @@ const Demo4: React.FC = () => {
         }
 
         // let ellipse = 0;
-        // Listen for animate update
-        // app.ticker.add((time) => {
-        //   // container.rotation -= 0.01 * time.deltaTime;
+        // // Listen for animate update
+        // app.ticker.add(({ deltaTime }) => {
+        //   ellipse += deltaTime / 60;
+
         // });
       } catch (error) {
         console.error("PixiJS initialization error:", error);
@@ -111,7 +241,7 @@ const Demo4: React.FC = () => {
       <Card title="PixiJS 创建图形" bordered={false}>
         <div style={{ marginBottom: "16px" }}>
           <h3></h3>
-          <p>这是一个使用 PixiJS 创建的简单动画示例,展示了一个矩形和一个圆。</p>
+          <p>这是一个使用 PixiJS 创建的简单动画示例,展示了Text、Graphics。</p>
         </div>
         <div
           ref={pixiContainerRef}
