@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Application, Assets, Container, Sprite } from "pixi.js";
 // import { initDevtools } from "@pixi/devtools";
+// import "@pixi/layout";
 import { Card } from "antd";
 // 入门demo
 const Demo1: React.FC = () => {
@@ -25,6 +26,12 @@ const Demo1: React.FC = () => {
           height: 600,
           antialias: true,
         });
+        // app.stage.layout = {
+        //   width: app.screen.width,
+        //   height: app.screen.height,
+        //   justifyContent: "center",
+        //   alignItems: "center",
+        // };
         // initDevtools({ app });
 
         // Check if component is still mounted before proceeding

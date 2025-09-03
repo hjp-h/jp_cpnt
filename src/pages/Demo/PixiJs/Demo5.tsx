@@ -161,10 +161,11 @@ const Demo5: React.FC = () => {
 
         // let ellipse = 0;
         // // Listen for animate update
-        // app.ticker.add(({ deltaTime }) => {
-        //   ellipse += deltaTime / 60;
-
-        // });
+        app.ticker.add(({ deltaTime }) => {
+          // ellipse += deltaTime / 60;
+          customFilter.resources.timeUniforms.uniforms.uTime +=
+            0.04 * deltaTime;
+        });
       } catch (error) {
         console.error("PixiJS initialization error:", error);
       }
