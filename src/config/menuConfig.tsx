@@ -80,6 +80,12 @@ export const menuItems: MenuItem[] = [
         label: "DndKit",
         path: "/components/dndkit",
       },
+      {
+        key: "animationDemo",
+        icon: <LayoutOutlined />,
+        label: "AnimationDemo",
+        path: "/components/animationDemo",
+      },
     ],
   },
 ];

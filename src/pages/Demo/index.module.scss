@@ -5,6 +5,7 @@
   height: 100%;
   position: relative;
   overflow: scroll;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -44,3 +45,5 @@
     background-color: green;
   }
 }
+
+.AnimationDemo {}

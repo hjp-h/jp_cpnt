@@ -1,0 +1,27 @@
+.main {
+  width: 100%;
+  overflow: hidden; // 隐藏溢出内容
+
+  .scroll-content {
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+    // 移除 overflow-x: scroll，使用 transform 控制滚动
+    will-change: transform; // 提示浏览器进行GPU加速
+    transform: translateX(0); // 初始transform值
+
+    &-inner {
+      display: flex;
+      gap: 15px;
+      flex-shrink: 0; // 防止子元素收缩
+    }
+  }
+
+  .scroll-item {
+    width: 100px;
+    height: 100px;
+    background-color: rgb(48, 103, 240);
+    flex-shrink: 0; // 防止项目收缩
+  }
+}

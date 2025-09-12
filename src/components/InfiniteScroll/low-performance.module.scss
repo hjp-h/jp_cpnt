@@ -1,0 +1,22 @@
+.main {
+  width: 100%;
+
+  .scroll-content {
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+
+    &-inner {
+      display: flex;
+      gap: 15px;
+    }
+  }
+
+  .scroll-item {
+    width: 100px;
+    height: 100px;
+    background-color: rgb(48, 103, 240);
+  }
+}
