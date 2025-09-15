@@ -47,3 +47,18 @@
 }
 
 .AnimationDemo {}
+
+.Fruits {
+  &DrawBtn {
+    margin: 0 auto;
+    width: 300px;
+    margin-top: 50px;
+    background: #4697b8;
+    color: #fff;
+    font-size: 32px;
+    text-align: center;
+    height: 60px;
+    line-height: 60px;
+    cursor: pointer;
+  }
+}
