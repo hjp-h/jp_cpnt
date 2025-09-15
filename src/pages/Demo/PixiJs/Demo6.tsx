@@ -15,11 +15,12 @@ import {
   LINE_RESOURCE,
   LineNo,
   SYMBOL_RESOURCE,
-  MOCK_RESULT,
   MOCK_WIN_LINE,
   Cell,
   SYMBOL_BORDER_ANIMATION_CONFIG,
 } from "./constants";
+import bgm from "./resource/background.mp3";
+import { useSoundController } from "./hooks/useSoundController";
 import styles from "../index.module.scss";
 import gsap from "gsap";
 import { getSpriteFrames } from "./helper/getSpritsheets";
@@ -38,6 +39,8 @@ const Demo6: React.FC = () => {
   const appRef = useRef<Application | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const symbolLen = SYMBOL_RESOURCE.length;
+
+  const soundController = useSoundController(bgm);
 
   // 线条动画
   const animationLinesRef = useRef<{ sprite: AnimatedSprite; type: LineNo }[]>(
@@ -112,7 +115,6 @@ const Demo6: React.FC = () => {
     row: number,
     col: number
   ) => {
-    console.log("createSymbolBorderAnimation", row, col);
     const { spritesheet } = animation;
     const app = appRef.current;
     if (!app) return;
@@ -163,13 +165,25 @@ const Demo6: React.FC = () => {
   useEffect(() => {
     let isMounted = true;
 
+    // 清理之前的状态
+    animationLinesRef.current = [];
+    symbolsRef.current = [];
+
+    soundController?.play?.();
     const initPixi = async () => {
       if (!pixiContainerRef.current || !isMounted) return;
 
       try {
         // Create a new application
         setLoading(true);
-        await Assets.load([...SYMBOL_RESOURCE, ...LINE_RESOURCE]);
+
+        // 确保资源已加载，避免重复加载
+        try {
+          await Assets.load([...SYMBOL_RESOURCE, ...LINE_RESOURCE]);
+        } catch (loadError) {
+          console.warn("Assets already loaded or load error:", loadError);
+        }
+
         setLoading(false);
         const app = new Application();
 
@@ -185,19 +199,28 @@ const Demo6: React.FC = () => {
 
         // Check if component is still mounted before proceeding
         if (!isMounted) {
-          app.destroy(true, true);
+          app.destroy(true, { children: true, texture: false });
           return;
         }
 
         appRef.current = app;
 
         // Append the application canvas to our container
-        if (pixiContainerRef.current) {
+        if (
+          pixiContainerRef.current &&
+          !pixiContainerRef.current.contains(app.canvas)
+        ) {
           pixiContainerRef.current.appendChild(app.canvas);
         }
 
         // 初始化图案
         for (let col = 0; col < COLS; col++) {
+          // 检查组件是否仍然挂载
+          if (!isMounted) {
+            app.destroy(true, { children: true, texture: false });
+            return;
+          }
+
           // 列容器
           const colContainer = new Container();
           colContainer.x = col * (SYMBOL_WIDTH + MARGIN_X);
@@ -239,15 +262,45 @@ const Demo6: React.FC = () => {
     return () => {
       isMounted = false;
 
+      // 停止所有GSAP动画
+      gsap.killTweensOf("*");
+
+      // 清理音频控制器
+      soundController?.stop?.();
+
+      // 清理引用数组
+      animationLinesRef.current = [];
+      symbolsRef.current = [];
+
       if (appRef.current) {
         try {
           console.log("Cleaning up PixiJS app", appRef.current);
-          // 使用更安全的销毁方法
+
+          // 停止渲染循环
+          appRef.current.ticker?.stop();
+
+          // 清理stage上的所有子元素
+          if (appRef.current.stage) {
+            appRef.current.stage.removeChildren();
+            appRef.current.stage.destroy({ children: true, texture: false });
+          }
+
+          // 移除canvas元素
+          if (pixiContainerRef.current && appRef.current.canvas) {
+            try {
+              pixiContainerRef.current.removeChild(appRef.current.canvas);
+            } catch (e) {
+              // Canvas可能已经被移除
+            }
+          }
+
+          // 销毁应用
           if (typeof appRef.current.destroy === "function") {
-            appRef.current.destroy(true, true);
+            appRef.current.destroy(true, { children: true, texture: false });
           } else if (typeof appRef.current.stop === "function") {
             appRef.current.stop();
           }
+
           appRef.current = null;
         } catch (error) {
           console.error("Error destroying PixiJS app:", error);
