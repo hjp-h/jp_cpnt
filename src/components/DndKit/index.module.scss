@@ -1,15 +1,43 @@
-.DraggableContainer,.DroppableContainer {
+@use '@/styles/mixins'as mixins;
+
+.DraggableContainer,
+.DroppableContainer {
   width: 200px;
   height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .DraggableContainer {
   background-color: red;
 }
+
 .DroppableContainer {
-   width: 400px;
+  width: 400px;
   height: 400px;
   background-color: blue;
+}
+
+.DefaultLayer {
+  display: flex;
+}
+
+.ScrollContainer {
+  height: 500px;
+  width: 500px;
+  overflow: scroll;
+  background: #ffffffa0;
+
+  .ScrollItem {
+    height: 200px;
+    width: 200px;
+    background-color: #cc41efa0;
+    @include mixins.flexCenter();
+  }
+}
+.OverlayItem{
+   height: 200px;
+    width: 200px;
+     background-color: green;
 }
