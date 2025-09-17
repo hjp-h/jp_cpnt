@@ -17,6 +17,8 @@ import {
 
 import { SortableItem } from "./components/sortable";
 
+import styles from "./index.module.scss";
+
 export default function SortableDemo() {
   const [items, setItems] = useState([1, 2, 3]);
   const sensors = useSensors(
@@ -34,7 +36,9 @@ export default function SortableDemo() {
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
         {items.map((id) => (
-          <SortableItem key={id} id={id} />
+          <SortableItem key={id} id={id}>
+            <div className={styles.SortItem}>{id}</div>
+          </SortableItem>
         ))}
       </SortableContext>
     </DndContext>

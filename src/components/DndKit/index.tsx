@@ -12,6 +12,7 @@ import Droppable from "./components/droppable";
 import styles from "./index.module.scss";
 import DragOverlayDemo from "./DragOverlayDemo";
 import SortableDemo from "./SortableDemo";
+import UltraDemo from "./UltraDemo";
 
 export default function DndKit() {
   // 在DndContext进行事件监听
@@ -57,7 +58,7 @@ export default function DndKit() {
   const sensors = useSensors(touchSensor);
   return (
     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-      <div className={styles.DefaultLayer}>
+      {/* <div className={styles.DefaultLayer}>
         {!parent ? draggableMarkup : null}
         {containers.map((id) => (
           <Droppable id={id} key={id}>
@@ -70,7 +71,8 @@ export default function DndKit() {
         ))}
       </div>
       <DragOverlayDemo />
-      <SortableDemo />
+      <SortableDemo /> */}
+      <UltraDemo />
     </DndContext>
   );
 }
