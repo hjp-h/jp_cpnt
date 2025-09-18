@@ -14,6 +14,7 @@ import NUM6 from "./img/6.png";
 import NUM7 from "./img/7.png";
 import NUM8 from "./img/8.png";
 import NUM9 from "./img/9.png";
+import RollingNumber2 from "../../components/RollingNumber/RollingNumber2";
 const numImages = [
   NUM0,
   NUM1,
@@ -45,6 +46,7 @@ export default function AnimationDemo() {
           digitLength={8}
           duration={1500}
         />
+        <RollingNumber2 num={8434161} />
       </Card>
     </div>
   );
