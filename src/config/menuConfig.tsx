@@ -86,6 +86,12 @@ export const menuItems: MenuItem[] = [
         label: "AnimationDemo",
         path: "/components/animationDemo",
       },
+      {
+        key: "howlerDemo",
+        icon: <LayoutOutlined />,
+        label: "HowlerDemo",
+        path: "/components/howlerDemo",
+      },
     ],
   },
 ];

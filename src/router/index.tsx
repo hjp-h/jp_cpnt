@@ -10,6 +10,7 @@ import PixijsDemo from "../pages/Demo/PixiJs";
 import DndKitDemo from "../pages/Demo/DndKitDemo";
 import GsapDemo from "../pages/Demo/GsapDemo";
 import AnimationDemo from "../pages/Demo/AnimationDemo";
+import HowlerDemo from "../pages/Demo/HowlerDemo";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
       {
         path: "components/animationDemo",
         element: <AnimationDemo />,
+      },
+      {
+        path: "components/howlerDemo",
+        element: <HowlerDemo />,
       },
     ],
   },
