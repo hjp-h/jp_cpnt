@@ -5,10 +5,32 @@ import Button from "../components/Button/Button";
 const { Title, Paragraph } = Typography;
 
 const Home: React.FC = () => {
+  function startWorker() {
+    const worker = new Worker(new URL("../test/worker.js", import.meta.url));
+
+    worker.postMessage({
+      action: "calculate",
+      data: { iterations: 1000000 },
+    });
+
+    worker.onmessage = (e) => {
+      if (e.data.type === "progress") {
+        document.getElementById(
+          "progress"
+        )!.textContent = `进度: ${e.data.value}%`;
+      } else {
+        document.getElementById("result")!.textContent = `结果: ${e.data}`;
+        worker.terminate();
+      }
+    };
+  }
   return (
     <div>
       <Title level={2}>欢迎来到 JP Component</Title>
       <Button>12212</Button>
+      <Button onClick={startWorker}>开始计算</Button>
+      <div id="result"></div>
+      <div id="progress"></div>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} md={8}>
           <Card title="组件库" variant="outlined">
